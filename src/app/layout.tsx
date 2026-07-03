@@ -7,7 +7,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body>{children}</body>
+      <body>
+        <main className="mt-8">{children}</main>
+      </body>
     </html>
   );
 }
