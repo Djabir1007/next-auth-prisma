@@ -9,7 +9,7 @@ import {
   labelClassName,
   inputClassName,
   buttonClassName,
-} from "./RegisterForm.styles";
+} from "@/src/shared/ui/form/form.styles";
 
 import { EyeIcon } from "@/src/shared/ui/icons/EyeIcon";
 
@@ -101,9 +101,12 @@ export const RegisterForm = () => {
       <button className={buttonClassName} type="submit">
         Зарегистрироваться
       </button>
-      <Link className="text-center text-sm underline" href="/login">
-        Уже есть аккаунт? Войти
-      </Link>
+      <p className="text-center text-sm">
+        Уже есть аккаунт?{" "}
+        <Link className="font-medium text-slate-900 underline" href="/login">
+          Войти
+        </Link>
+      </p>
     </form>
   );
 };
