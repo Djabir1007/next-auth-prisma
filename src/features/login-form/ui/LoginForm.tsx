@@ -2,24 +2,45 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+
+import {
+  type LoginFormValues,
+  loginFormSchema,
+} from "../model/loginFormSchema";
+
 import {
   formClassName,
   fieldClassName,
   labelClassName,
   inputClassName,
   buttonClassName,
+  errorClassName,
 } from "@/src/shared/ui/form/form.styles";
 import { EyeIcon } from "@/src/shared/ui/icons/EyeIcon";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const LoginForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginFormSchema),
+  });
+
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
 
   const handlePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
+  const onSubmit = (data: LoginFormValues) => {
+    console.log(data);
+  };
+
   return (
-    <form className={formClassName}>
+    <form className={formClassName} onSubmit={handleSubmit(onSubmit)}>
       <div className={fieldClassName}>
         <label className={labelClassName} htmlFor="email">
           Email
@@ -28,9 +49,12 @@ export const LoginForm = () => {
           className={inputClassName}
           type="email"
           id="email"
-          name="email"
+          {...register("email")}
           autoComplete="email"
         />
+        {errors.email && (
+          <span className={errorClassName}>{errors.email.message}</span>
+        )}
       </div>
 
       <div className={fieldClassName}>
@@ -42,7 +66,7 @@ export const LoginForm = () => {
             className={`${inputClassName} pr-10`}
             type={isPasswordVisible ? "text" : "password"}
             id="password"
-            name="password"
+            {...register("password")}
             autoComplete="current-password"
           />
           <button
@@ -54,6 +78,9 @@ export const LoginForm = () => {
             <EyeIcon />
           </button>
         </div>
+        {errors.password && (
+          <span className={errorClassName}>{errors.password.message}</span>
+        )}
       </div>
 
       <button className={buttonClassName} type="submit">

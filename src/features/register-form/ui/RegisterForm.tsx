@@ -2,6 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useForm } from "react-hook-form";
+import {
+  type RegisterFormValues,
+  registerFormSchema,
+} from "../model/registerFormSchema";
 
 import {
   formClassName,
@@ -9,11 +14,21 @@ import {
   labelClassName,
   inputClassName,
   buttonClassName,
+  errorClassName,
 } from "@/src/shared/ui/form/form.styles";
 
 import { EyeIcon } from "@/src/shared/ui/icons/EyeIcon";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export const RegisterForm = () => {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerFormSchema),
+  });
+
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
@@ -26,8 +41,12 @@ export const RegisterForm = () => {
     setIsConfirmPasswordVisible((prev) => !prev);
   };
 
+  const onSubmit = (data: RegisterFormValues) => {
+    console.log(data);
+  };
+
   return (
-    <form className={formClassName}>
+    <form className={formClassName} onSubmit={handleSubmit(onSubmit)}>
       <div className={fieldClassName}>
         <label className={labelClassName} htmlFor="firstName">
           Имя
@@ -36,9 +55,12 @@ export const RegisterForm = () => {
           className={inputClassName}
           type="text"
           id="firstName"
-          name="firstName"
+          {...register("firstName")}
           autoComplete="given-name"
         />
+        {errors.firstName && (
+          <span className={errorClassName}>{errors.firstName.message}</span>
+        )}
       </div>
 
       <div className={fieldClassName}>
@@ -49,9 +71,12 @@ export const RegisterForm = () => {
           className={inputClassName}
           type="email"
           id="email"
-          name="email"
+          {...register("email")}
           autoComplete="email"
         />
+        {errors.email && (
+          <span className={errorClassName}>{errors.email.message}</span>
+        )}
       </div>
 
       <div className={fieldClassName}>
@@ -63,17 +88,21 @@ export const RegisterForm = () => {
             className={`${inputClassName} pr-10`}
             type={isPasswordVisible ? "text" : "password"}
             id="password"
-            name="password"
+            {...register("password")}
             autoComplete="new-password"
           />
           <button
             className="absolute right-3 top-1/2 -translate-y-1/2"
             type="button"
             onClick={handlePasswordVisibility}
+            aria-label="Показать пароль"
           >
             <EyeIcon />
           </button>
         </div>
+        {errors.password && (
+          <span className={errorClassName}>{errors.password.message}</span>
+        )}
       </div>
 
       <div className={fieldClassName}>
@@ -85,17 +114,23 @@ export const RegisterForm = () => {
             className={`${inputClassName} pr-10`}
             type={isConfirmPasswordVisible ? "text" : "password"}
             id="confirmPassword"
-            name="confirmPassword"
+            {...register("confirmPassword")}
             autoComplete="new-password"
           />
           <button
             className="absolute right-3 top-1/2 -translate-y-1/2"
             type="button"
             onClick={handleConfirmPasswordVisibility}
+            aria-label="Показать пароль"
           >
             <EyeIcon />
           </button>
         </div>
+        {errors.confirmPassword && (
+          <span className={errorClassName}>
+            {errors.confirmPassword.message}
+          </span>
+        )}
       </div>
 
       <button className={buttonClassName} type="submit">
