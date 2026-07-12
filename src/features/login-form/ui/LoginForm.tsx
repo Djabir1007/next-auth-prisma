@@ -30,12 +30,17 @@ export const LoginForm = () => {
   });
 
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+  const [successMessage, setSuccessMessage] = useState<string>("");
+  const [serverError, setServerError] = useState<string>("");
 
   const handlePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
   const onSubmit = async (data: LoginFormValues) => {
+    setSuccessMessage("");
+    setServerError("");
+
     const response = await fetch("/api/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -44,7 +49,15 @@ export const LoginForm = () => {
 
     const result = await response.json();
 
-    console.log(result);
+    if (response.ok) {
+      setSuccessMessage("Вход выполнен успешно!");
+      return;
+    }
+
+    if (!response.ok) {
+      setServerError(result.message);
+      return;
+    }
   };
 
   return (
@@ -90,6 +103,9 @@ export const LoginForm = () => {
           <span className={errorClassName}>{errors.password.message}</span>
         )}
       </div>
+      {serverError && <span className={errorClassName}>{serverError}</span>}
+
+      {successMessage && <span>{successMessage}</span>}
 
       <button className={buttonClassName} type="submit">
         Войти
