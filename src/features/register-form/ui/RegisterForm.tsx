@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
 import {
   type RegisterFormValues,
   registerFormSchema,
@@ -33,6 +34,8 @@ export const RegisterForm = () => {
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
     useState(false);
 
+  const [serverError, setServerError] = useState<string>("");
+
   const handlePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
@@ -41,7 +44,11 @@ export const RegisterForm = () => {
     setIsConfirmPasswordVisible((prev) => !prev);
   };
 
+  const router = useRouter();
+
   const onSubmit = async (data: RegisterFormValues) => {
+    setServerError("");
+
     const response = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -50,7 +57,15 @@ export const RegisterForm = () => {
 
     const result = await response.json();
 
-    console.log(result);
+    if (response.ok) {
+      router.push("/login");
+      return;
+    }
+
+    if (!response.ok) {
+      setServerError(result.message);
+      return;
+    }
   };
 
   return (
@@ -140,6 +155,8 @@ export const RegisterForm = () => {
           </span>
         )}
       </div>
+
+      {serverError && <span className={errorClassName}>{serverError}</span>}
 
       <button className={buttonClassName} type="submit">
         Зарегистрироваться
