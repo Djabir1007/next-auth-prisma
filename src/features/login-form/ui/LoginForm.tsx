@@ -19,6 +19,7 @@ import {
 } from "@/src/shared/ui/form/form.styles";
 import { EyeIcon } from "@/src/shared/ui/icons/EyeIcon";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useRouter } from "next/navigation";
 
 export const LoginForm = () => {
   const {
@@ -30,15 +31,16 @@ export const LoginForm = () => {
   });
 
   const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
-  const [successMessage, setSuccessMessage] = useState<string>("");
+
   const [serverError, setServerError] = useState<string>("");
+
+  const router = useRouter();
 
   const handlePasswordVisibility = () => {
     setIsPasswordVisible((prev) => !prev);
   };
 
   const onSubmit = async (data: LoginFormValues) => {
-    setSuccessMessage("");
     setServerError("");
 
     const response = await fetch("/api/login", {
@@ -50,8 +52,7 @@ export const LoginForm = () => {
     const result = await response.json();
 
     if (response.ok) {
-      setSuccessMessage("Вход выполнен успешно!");
-      return;
+      router.replace("profile");
     }
 
     if (!response.ok) {
@@ -104,8 +105,6 @@ export const LoginForm = () => {
         )}
       </div>
       {serverError && <span className={errorClassName}>{serverError}</span>}
-
-      {successMessage && <span>{successMessage}</span>}
 
       <button className={buttonClassName} type="submit">
         Войти
