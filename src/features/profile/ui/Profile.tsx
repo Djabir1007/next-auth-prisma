@@ -1,3 +1,7 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+
 type ProfileProps = {
   user: {
     firstName: string;
@@ -6,7 +10,19 @@ type ProfileProps = {
 };
 
 export const Profile = ({ user }: ProfileProps) => {
+  const router = useRouter();
+
   const userInitial = user.firstName[0].toUpperCase();
+
+  const handleLogout = async () => {
+    const response = await fetch("/api/logout", {
+      method: "POST",
+    });
+
+    if (response.ok) {
+      router.replace("/login");
+    }
+  };
 
   return (
     <article className="mx-auto max-w-[520px] rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
@@ -45,6 +61,7 @@ export const Profile = ({ user }: ProfileProps) => {
         <button
           className="rounded-md bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:bg-slate-700"
           type="button"
+          onClick={handleLogout}
         >
           Выйти из аккаунта
         </button>
